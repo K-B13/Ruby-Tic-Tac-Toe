@@ -1,6 +1,6 @@
 class Game
   attr_accessor :player_one_name, :player_two_name, :user_number, :turn
-  attr_reader :player_one_moves, :player_two_moves, :win_conditions, :is_over
+  attr_reader :player_one_moves, :player_two_moves, :win_conditions, :is_over, :stop_game
   def initialize(player_one_name, player_two_name)
     @player_one_name = player_one_name
     @player_two_name = player_two_name
@@ -31,6 +31,9 @@ class Game
     ]
     @is_over = false
     @turn = true
+    @stop_game = false
+    @player_one_score = 0
+    @player_two_score = 0
   end
 
   def display_board
@@ -66,6 +69,7 @@ class Game
         if how_won.empty?
           system("clear")
           puts "Player 1 wins"
+          @player_one_score += 1
           return @is_over = true
         end
       else
@@ -73,6 +77,7 @@ class Game
         if how_won.empty?
           system("clear")
           puts "Player 2 wins"
+          @player_two_score += 1
           return @is_over = true
         end
       end
@@ -109,6 +114,27 @@ class Game
       puts "#{player_two_name}'s Turn"
     end
   end
+  def score_board
+    puts "#{player_one_name}: #{@player_one_score}"
+    puts ""
+    puts "#{player_two_name}: #{@player_two_score}"
+    puts ""
+  end
+
+  def end_game
+    puts 'Would you like to continue playing the game? [Yes, No]'
+    user_response = gets.chomp.downcase
+    if user_response == "no" || user_response == 'n'
+      @stop_game = true
+    else
+      @board = [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ']
+      @player_one_moves = []
+      @player_two_moves = []
+      @is_over = false
+      @turn = true
+      @stop_game = false
+    end
+  end
 end
 
 puts "Player 1 enter your name"
@@ -127,8 +153,9 @@ puts "#{player_two_name} Ready"
 
 game = Game.new(player_one_name, player_two_name)
 # puts game.display_board
-while game.is_over == false
+while game.stop_game == false
   system("clear")
+  game.score_board
   game.whose_turn
   game.display_board
   game.user_input
@@ -139,5 +166,6 @@ while game.is_over == false
   end
   if game.is_over == true
     game.display_board
+    game.end_game
   end
 end
